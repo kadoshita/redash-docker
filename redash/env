@@ -1,0 +1,5 @@
+POSTGRES_PASSWORD=redash
+POSTGRES_USER=redash
+POSTGRES_DB=redash
+REDASH_REDIS_URL=redis://redis:6379/0
+REDASH_DATABASE_URL: "postgresql://redash:redash@postgres:5432/redash"
