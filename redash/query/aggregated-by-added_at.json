@@ -1,0 +1,119 @@
+{
+    "collection": "posts",
+    "aggregate": [
+        {
+            "$group": {
+                "_id": {
+                    "yyyy": {
+                        "$year": "$added_at"
+                    },
+                    "mm": {
+                        "$month": "$added_at"
+                    },
+                    "dd": {
+                        "$dayOfMonth": "$added_at"
+                    }
+                },
+                "count": {
+                    "$sum": 1
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "addedAtStr": {
+                    "$concat": [
+                        {
+                            "$substr": [
+                                "$_id.yyyy",
+                                0,
+                                4
+                            ]
+                        },
+                        {
+                            "$cond": [
+                                {
+                                    "$lte": [
+                                        "$_id.mm",
+                                        9
+                                    ]
+                                },
+                                {
+                                    "$concat": [
+                                        "0",
+                                        {
+                                            "$substr": [
+                                                "$_id.mm",
+                                                0,
+                                                2
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$substr": [
+                                        "$_id.mm",
+                                        0,
+                                        2
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "$cond": [
+                                {
+                                    "$lte": [
+                                        "$_id.dd",
+                                        9
+                                    ]
+                                },
+                                {
+                                    "$concat": [
+                                        "0",
+                                        {
+                                            "$substr": [
+                                                "$_id.dd",
+                                                0,
+                                                2
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$substr": [
+                                        "$_id.dd",
+                                        0,
+                                        2
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "addedAt": {
+                    "$toDate": "$addedAtStr"
+                }
+            }
+        },
+        {
+            "$project": {
+                "addedAtStr": 1,
+                "addedAt": 1,
+                "count": 1,
+                "_id": 0
+            }
+        },
+        {
+            "$sort": [
+                {
+                    "name": "addedAt",
+                    "direction": 1
+                }
+            ]
+        }
+    ]
+}
